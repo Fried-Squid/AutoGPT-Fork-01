@@ -11,6 +11,21 @@ from backend.data.block import (
 )
 from backend.data.model import SchemaField
 
+# -- Block initialization parameters --
+# id: str = "",
+# description: str = "",
+# contributors: list[ContributorDetails] = [],
+# categories: set[BlockCategory] | None = None,
+# input_schema: Type[BlockSchemaInputType] = EmptySchema,
+# output_schema: Type[BlockSchemaOutputType] = EmptySchema,
+# test_input: BlockInput | list[BlockInput] | None = None,
+# test_output: BlockData | list[BlockData] | None = None,
+# test_mock: dict[str, Any] | None = None,
+# test_credentials: Optional[Credentials] = None,
+# disabled: bool = False,
+# static_output: bool = False,
+# block_type: BlockType = BlockType.STANDARD,
+
 
 # Helper classes
 class StorageProvider(str, Enum):
@@ -69,7 +84,7 @@ class StoreObjectInS3Block(Block):
 
     def __init__(self):
         super().__init__(
-            name="Store Object in S3",
+            id="1bb232ad-a905-45c5-a29b-38e735c078d9",
             description="Store an object in an S3 compliant storage.",
             category=BlockCategory.OBJECT_STORAGE,
             input_schema=StoreObjectInS3Block.Input,
@@ -96,6 +111,11 @@ class StoreObjectInS3Block(Block):
         client = Minio(endpoint, access_key=access_key, secret_key=secret_key)
         pwd = os.getcwd()
         source_file_path = pwd + "/temp"
+       
+        # Write obj to temporary path
+        with open(source_file_path, "w") as f:
+            f.write(obj)
+
         try:
             client.fput_object(bucket, key, source_file_path)
             success = True
@@ -170,7 +190,7 @@ class RetrieveObjectFromS3Block(Block):
 
     def __init__(self):
         super().__init__(
-            name="Retrieve Object from S3",
+            id="987ecc6e-8515-480a-a232-9598b44d04af",
             description="Retrieve an object from an S3 compliant storage.",
             category=BlockCategory.OBJECT_STORAGE,
             input_schema=RetrieveObjectFromS3Block.Input,
@@ -266,7 +286,7 @@ class DeleteObjectFromS3Block(Block):
 
     def __init__(self):
         super().__init__(
-            name="Delete Object from S3",
+            id="0aac73b4-fc20-46ec-acbb-98006bc3dbf7",
             description="Delete an object from an S3 compliant storage.",
             category=BlockCategory.OBJECT_STORAGE,
             input_schema=DeleteObjectFromS3Block.Input,
@@ -347,7 +367,7 @@ class CreateBucketBlock(Block):
 
     def __init__(self):
         super().__init__(
-            name="Create Bucket",
+            id="7638c9bc-ae4e-4f15-8c5f-93b2f0450a12",
             description="Create a bucket in an S3 compliant storage.",
             category=BlockCategory.OBJECT_STORAGE,
             input_schema=CreateBucketBlock.Input,
@@ -433,7 +453,7 @@ class DeleteBucketBlock(Block):
 
     def __init__(self):
         super().__init__(
-            name="Delete Bucket",
+            id="af883b59-3695-43f3-9c37-d0925c96100b",
             description="Delete a bucket in an S3 compliant storage.",
             category=BlockCategory.OBJECT_STORAGE,
             input_schema=DeleteBucketBlock.Input,
