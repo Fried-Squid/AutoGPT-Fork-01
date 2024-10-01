@@ -1,24 +1,29 @@
+import os
+from enum import Enum
 from typing import Any
 
-
-from backend.data.block import Block, BlockCategory, BlockOutput, BlockSchema
+from backend.data.block import (
+    Block,
+    BlockCategory,
+    BlockInput,
+    BlockOutput,
+    BlockSchema,
+)
 from backend.data.model import SchemaField
 
-import os 
-from enum import Enum
 
 # Helper classes
 class StorageProvider(str, Enum):
-    #AWS = "aws"   -- Not implemented yet
+    # AWS = "aws"   -- Not implemented yet
     MINIO = "minio"
-
 
 
 # S3 compliant storage blocks
 class StoreObjectInS3(Block):
     """
-        This block is used to store an object in some S3 compliant storage.
+    This block is used to store an object in some S3 compliant storage.
     """
+
     class Input(BlockSchema):
         key: str = SchemaField(
             title="Key",
@@ -57,6 +62,7 @@ class StoreObjectInS3(Block):
             description="The secret key to use.",
             required=False,
         )
+
     class Output(BlockSchema):
         success: bool
         error: str
@@ -67,16 +73,26 @@ class StoreObjectInS3(Block):
             description="Store an object in an S3 compliant storage.",
             category=BlockCategory.MISC,
             input_schema=StoreObjectInS3.Input(),
-            output_schema=StoreObjectInS3.Output()
+            output_schema=StoreObjectInS3.Output(),
         )
-    
-    def _store_in_s3_AWS(self) -> BlockOutput:
+
+    @staticmethod
+    def _store_in_s3_AWS() -> BlockOutput:
         # Implementation goes here
         pass
 
-    def _store_in_s3_MINIO(self, key: str, obj: Any, bucket: str, endpoint: str, access_key: str, secret_key: str) -> BlockOutput:
+    @staticmethod
+    def _store_in_s3_MINIO(
+        key: str,
+        obj: Any,
+        bucket: str,
+        endpoint: str,
+        access_key: str,
+        secret_key: str,
+    ) -> BlockOutput:
         from Minio import Minio
         from Minio.error import S3Error
+
         client = Minio(endpoint, access_key=access_key, secret_key=secret_key)
         pwd = os.getcwd()
         source_file_path = pwd + "/temp"
@@ -87,23 +103,32 @@ class StoreObjectInS3(Block):
         except S3Error as e:
             success = False
             error = str(e)
-        
+
         return (success, error)
 
     def run(self, input_data: BlockInput) -> BlockOutput:
         provider = input_data.provider
         if provider == StorageProvider.MINIO:
-            success, error = self._store_in_s3_MINIO(input_data.key, input_data.obj, input_data.bucket, input_data.endpoint, input_data.access_key, input_data.secret_key)
+            success, error = self._store_in_s3_MINIO(
+                input_data.key,
+                input_data.obj,
+                input_data.bucket,
+                input_data.endpoint,
+                input_data.access_key,
+                input_data.secret_key,
+            )
             yield "success", success
             yield "error", error
         else:
             yield "success", False
             yield "error", "Provider not implemented yet."
 
+
 class RetrieveObjectFromS3(Block):
     """
-        This block is used to retrieve an object from some S3 compliant storage.
+    This block is used to retrieve an object from some S3 compliant storage.
     """
+
     class Input(BlockSchema):
         key: str = SchemaField(
             title="Key",
@@ -137,6 +162,7 @@ class RetrieveObjectFromS3(Block):
             description="The secret key to use.",
             required=False,
         )
+
     class Output(BlockSchema):
         obj: Any
         success: bool
@@ -148,15 +174,21 @@ class RetrieveObjectFromS3(Block):
             description="Retrieve an object from an S3 compliant storage.",
             category=BlockCategory.MISC,
             input_schema=RetrieveObjectFromS3.Input(),
-            output_schema=RetrieveObjectFromS3.Output()
+            output_schema=RetrieveObjectFromS3.Output(),
         )
-    def _retrieve_from_s3_AWS(self) -> BlockOutput:
+
+    @staticmethod
+    def _retrieve_from_s3_AWS() -> BlockOutput:
         # Implementation goes here
         pass
 
-    def _retrieve_from_s3_MINIO(self, key: str, bucket: str, endpoint: str, access_key: str, secret_key: str) -> BlockOutput:
+    @staticmethod
+    def _retrieve_from_s3_MINIO(
+        key: str, bucket: str, endpoint: str, access_key: str, secret_key: str
+    ) -> BlockOutput:
         from Minio import Minio
         from Minio.error import S3Error
+
         client = Minio(endpoint, access_key=access_key, secret_key=secret_key)
         try:
             obj = client.get_object(bucket, key)
@@ -166,13 +198,19 @@ class RetrieveObjectFromS3(Block):
             obj = None
             success = False
             error = str(e)
-        
+
         return (obj, success, error)
 
     def run(self, input_data: BlockInput) -> BlockOutput:
         provider = input_data.provider
         if provider == StorageProvider.MINIO:
-            obj, success, error = self._retrieve_from_s3_MINIO(input_data.key, input_data.bucket, input_data.endpoint, input_data.access_key, input_data.secret_key)
+            obj, success, error = self._retrieve_from_s3_MINIO(
+                input_data.key,
+                input_data.bucket,
+                input_data.endpoint,
+                input_data.access_key,
+                input_data.secret_key,
+            )
             if obj:
                 yield "obj", obj
             yield "success", success
@@ -182,10 +220,12 @@ class RetrieveObjectFromS3(Block):
             yield "success", False
             yield "error", "Provider not implemented yet."
 
+
 class DeleteObjectFromS3(Block):
     """
-        This block is used to delete an object from some S3 compliant storage.
+    This block is used to delete an object from some S3 compliant storage.
     """
+
     class Input(BlockSchema):
         key: str = SchemaField(
             title="Key",
@@ -219,6 +259,7 @@ class DeleteObjectFromS3(Block):
             description="The secret key to use.",
             required=False,
         )
+
     class Output(BlockSchema):
         success: bool
         error: str
@@ -229,14 +270,21 @@ class DeleteObjectFromS3(Block):
             description="Delete an object from an S3 compliant storage.",
             category=BlockCategory.MISC,
             input_schema=DeleteObjectFromS3.Input(),
-            output_schema=DeleteObjectFromS3.Output()
+            output_schema=DeleteObjectFromS3.Output(),
         )
-    def _delete_from_s3_AWS(self) -> BlockOutput:
+
+    @staticmethod
+    def _delete_from_s3_AWS() -> BlockOutput:
         # Implementation goes here
         pass
-    def _delete_from_s3_MINIO(self, key: str, bucket: str, endpoint: str, access_key: str, secret_key: str) -> BlockOutput:
+
+    @staticmethod
+    def _delete_from_s3_MINIO(
+        key: str, bucket: str, endpoint: str, access_key: str, secret_key: str
+    ) -> BlockOutput:
         from Minio import Minio
         from Minio.error import S3Error
+
         client = Minio(endpoint, access_key=access_key, secret_key=secret_key)
         try:
             client.remove_object(bucket, key)
@@ -245,7 +293,7 @@ class DeleteObjectFromS3(Block):
         except S3Error as e:
             success = False
             error = str(e)
-        
+
         return (success, error)
 
     def run(self, input_data: BlockInput) -> BlockOutput:
@@ -261,8 +309,9 @@ class DeleteObjectFromS3(Block):
 
 class CreateBucket(Block):
     """
-        This block is used to create a bucket in some S3 compliant storage.
+    This block is used to create a bucket in some S3 compliant storage.
     """
+
     class Input(BlockSchema):
         bucket: str = SchemaField(
             title="Bucket",
@@ -291,6 +340,7 @@ class CreateBucket(Block):
             description="The secret key to use.",
             required=False,
         )
+
     class Output(BlockSchema):
         success: bool
         error: str
@@ -301,16 +351,21 @@ class CreateBucket(Block):
             description="Create a bucket in an S3 compliant storage.",
             category=BlockCategory.MISC,
             input_schema=CreateBucket.Input(),
-            output_schema=CreateBucket.Output()
+            output_schema=CreateBucket.Output(),
         )
-    
-    def _create_bucket_AWS(self) -> BlockOutput:
+
+    @staticmethod
+    def _create_bucket_AWS() -> BlockOutput:
         # Implementation goes here
         pass
 
-    def _create_bucket_MINIO(self, bucket: str, endpoint: str, access_key: str, secret_key: str) -> BlockOutput:
+    @staticmethod
+    def _create_bucket_MINIO(
+        bucket: str, endpoint: str, access_key: str, secret_key: str
+    ) -> BlockOutput:
         from Minio import Minio
         from Minio.error import S3Error
+
         client = Minio(endpoint, access_key=access_key, secret_key=secret_key)
         try:
             client.make_bucket(bucket)
@@ -319,23 +374,30 @@ class CreateBucket(Block):
         except S3Error as e:
             success = False
             error = str(e)
-        
+
         return (success, error)
 
     def run(self, input_data: BlockInput) -> BlockOutput:
         provider = input_data.provider
         if provider == StorageProvider.MINIO:
-            success, error = self._create_bucket_MINIO(input_data.bucket, input_data.endpoint, input_data.access_key, input_data.secret_key)
+            success, error = self._create_bucket_MINIO(
+                input_data.bucket,
+                input_data.endpoint,
+                input_data.access_key,
+                input_data.secret_key,
+            )
             yield "success", success
             yield "error", error
         else:
             yield "success", False
             yield "error", "Provider not implemented yet."
 
+
 class DeleteBucket(Block):
     """
-        This block is used to delete a bucket in some S3 compliant storage.
+    This block is used to delete a bucket in some S3 compliant storage.
     """
+
     class Input(BlockSchema):
         bucket: str = SchemaField(
             title="Bucket",
@@ -364,23 +426,32 @@ class DeleteBucket(Block):
             description="The secret key to use.",
             required=False,
         )
+
     class Output(BlockSchema):
         success: bool
         error: str
+
     def __init__(self):
         super().__init__(
             name="Delete Bucket",
             description="Delete a bucket in an S3 compliant storage.",
             category=BlockCategory.MISC,
             input_schema=DeleteBucket.Input(),
-            output_schema=DeleteBucket.Output()
+            output_schema=DeleteBucket.Output(),
         )
-    def _delete_bucket_AWS(self) -> BlockOutput:
+
+    @staticmethod
+    def _delete_bucket_AWS() -> BlockOutput:
         # Implementation goes here
         pass
-    def _delete_bucket_MINIO(self, bucket: str, endpoint: str, access_key: str, secret_key: str) -> BlockOutput:
+
+    @staticmethod
+    def _delete_bucket_MINIO(
+        bucket: str, endpoint: str, access_key: str, secret_key: str
+    ) -> BlockOutput:
         from Minio import Minio
         from Minio.error import S3Error
+
         client = Minio(endpoint, access_key=access_key, secret_key=secret_key)
         try:
             client.remove_bucket(bucket)
@@ -389,7 +460,5 @@ class DeleteBucket(Block):
         except S3Error as e:
             success = False
             error = str(e)
-        
+
         return (success, error)
-
-
