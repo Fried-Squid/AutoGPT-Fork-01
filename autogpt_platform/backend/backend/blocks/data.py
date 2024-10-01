@@ -11,21 +11,6 @@ from backend.data.block import (
 )
 from backend.data.model import SchemaField
 
-# -- Block initialization parameters --
-# id: str = "",
-# description: str = "",
-# contributors: list[ContributorDetails] = [],
-# categories: set[BlockCategory] | None = None,
-# input_schema: Type[BlockSchemaInputType] = EmptySchema,
-# output_schema: Type[BlockSchemaOutputType] = EmptySchema,
-# test_input: BlockInput | list[BlockInput] | None = None,
-# test_output: BlockData | list[BlockData] | None = None,
-# test_mock: dict[str, Any] | None = None,
-# test_credentials: Optional[Credentials] = None,
-# disabled: bool = False,
-# static_output: bool = False,
-# block_type: BlockType = BlockType.STANDARD,
-
 
 # Helper classes
 class StorageProvider(str, Enum):
@@ -111,7 +96,7 @@ class StoreObjectInS3Block(Block):
         client = Minio(endpoint, access_key=access_key, secret_key=secret_key)
         pwd = os.getcwd()
         source_file_path = pwd + "/temp"
-       
+
         # Write obj to temporary path
         with open(source_file_path, "w") as f:
             f.write(obj)
@@ -482,3 +467,18 @@ class DeleteBucketBlock(Block):
             error = str(e)
 
         return (success, error)
+
+    def run(self, input_data: BlockInput) -> BlockOutput:
+        provider = input_data.provider
+        if provider == StorageProvider.MINIO:
+            success, error = self._delete_bucket_MINIO(
+                input_data.bucket,
+                input_data.endpoint,
+                input_data.access_key,
+                input_data.secret_key,
+            )
+            yield "success", success
+            yield "error", error
+        else:
+            yield "success", False
+            yield "error", "Provider not implemented yet."
