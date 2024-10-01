@@ -86,7 +86,7 @@ class StoreObjectInS3Block(Block):
         super().__init__(
             id="1bb232ad-a905-45c5-a29b-38e735c078d9",
             description="Store an object in an S3 compliant storage.",
-            category=BlockCategory.OBJECT_STORAGE,
+            categories={BlockCategory.OBJECT_STORAGE},
             input_schema=StoreObjectInS3Block.Input,
             output_schema=StoreObjectInS3Block.Output,
         )
@@ -192,7 +192,7 @@ class RetrieveObjectFromS3Block(Block):
         super().__init__(
             id="987ecc6e-8515-480a-a232-9598b44d04af",
             description="Retrieve an object from an S3 compliant storage.",
-            category=BlockCategory.OBJECT_STORAGE,
+            categories={BlockCategory.OBJECT_STORAGE},
             input_schema=RetrieveObjectFromS3Block.Input,
             output_schema=RetrieveObjectFromS3Block.Output,
         )
@@ -288,7 +288,7 @@ class DeleteObjectFromS3Block(Block):
         super().__init__(
             id="0aac73b4-fc20-46ec-acbb-98006bc3dbf7",
             description="Delete an object from an S3 compliant storage.",
-            category=BlockCategory.OBJECT_STORAGE,
+            categories={BlockCategory.OBJECT_STORAGE},
             input_schema=DeleteObjectFromS3Block.Input,
             output_schema=DeleteObjectFromS3Block.Output,
         )
@@ -369,7 +369,7 @@ class CreateBucketBlock(Block):
         super().__init__(
             id="7638c9bc-ae4e-4f15-8c5f-93b2f0450a12",
             description="Create a bucket in an S3 compliant storage.",
-            category=BlockCategory.OBJECT_STORAGE,
+            categories={BlockCategory.OBJECT_STORAGE},
             input_schema=CreateBucketBlock.Input,
             output_schema=CreateBucketBlock.Output,
         )
@@ -455,7 +455,7 @@ class DeleteBucketBlock(Block):
         super().__init__(
             id="af883b59-3695-43f3-9c37-d0925c96100b",
             description="Delete a bucket in an S3 compliant storage.",
-            category=BlockCategory.OBJECT_STORAGE,
+            categories={BlockCategory.OBJECT_STORAGE},
             input_schema=DeleteBucketBlock.Input,
             output_schema=DeleteBucketBlock.Output,
         )
