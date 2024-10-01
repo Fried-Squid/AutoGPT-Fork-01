@@ -72,8 +72,8 @@ class StoreObjectInS3Block(Block):
             name="Store Object in S3",
             description="Store an object in an S3 compliant storage.",
             category=BlockCategory.OBJECT_STORAGE,
-            input_schema=StoreObjectInS3.Input(),
-            output_schema=StoreObjectInS3.Output(),
+            input_schema=StoreObjectInS3Block.Input(),
+            output_schema=StoreObjectInS3Block.Output(),
         )
 
     @staticmethod
@@ -173,8 +173,8 @@ class RetrieveObjectFromS3Block(Block):
             name="Retrieve Object from S3",
             description="Retrieve an object from an S3 compliant storage.",
             category=BlockCategory.OBJECT_STORAGE,
-            input_schema=RetrieveObjectFromS3.Input(),
-            output_schema=RetrieveObjectFromS3.Output(),
+            input_schema=RetrieveObjectFromS3Block.Input(),
+            output_schema=RetrieveObjectFromS3Block.Output(),
         )
 
     @staticmethod
@@ -269,8 +269,8 @@ class DeleteObjectFromS3Block(Block):
             name="Delete Object from S3",
             description="Delete an object from an S3 compliant storage.",
             category=BlockCategory.OBJECT_STORAGE,
-            input_schema=DeleteObjectFromS3.Input(),
-            output_schema=DeleteObjectFromS3.Output(),
+            input_schema=DeleteObjectFromS3Block.Input(),
+            output_schema=DeleteObjectFromS3Block.Output(),
         )
 
     @staticmethod
@@ -350,8 +350,8 @@ class CreateBucketBlock(Block):
             name="Create Bucket",
             description="Create a bucket in an S3 compliant storage.",
             category=BlockCategory.OBJECT_STORAGE,
-            input_schema=CreateBucket.Input(),
-            output_schema=CreateBucket.Output(),
+            input_schema=CreateBucketBlock.Input(),
+            output_schema=CreateBucketBlock.Output(),
         )
 
     @staticmethod
@@ -436,8 +436,8 @@ class DeleteBucketBlock(Block):
             name="Delete Bucket",
             description="Delete a bucket in an S3 compliant storage.",
             category=BlockCategory.OBJECT_STORAGE,
-            input_schema=DeleteBucket.Input(),
-            output_schema=DeleteBucket.Output(),
+            input_schema=DeleteBucketBlock.Input(),
+            output_schema=DeleteBucketBlock.Output(),
         )
 
     @staticmethod
