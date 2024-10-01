@@ -71,7 +71,7 @@ class StoreObjectInS3Block(Block):
         super().__init__(
             name="Store Object in S3",
             description="Store an object in an S3 compliant storage.",
-            category=BlockCategory.MISC,
+            category=BlockCategory.OBJECT_STORAGE,
             input_schema=StoreObjectInS3.Input(),
             output_schema=StoreObjectInS3.Output(),
         )
@@ -172,7 +172,7 @@ class RetrieveObjectFromS3Block(Block):
         super().__init__(
             name="Retrieve Object from S3",
             description="Retrieve an object from an S3 compliant storage.",
-            category=BlockCategory.MISC,
+            category=BlockCategory.OBJECT_STORAGE,
             input_schema=RetrieveObjectFromS3.Input(),
             output_schema=RetrieveObjectFromS3.Output(),
         )
@@ -268,7 +268,7 @@ class DeleteObjectFromS3Block(Block):
         super().__init__(
             name="Delete Object from S3",
             description="Delete an object from an S3 compliant storage.",
-            category=BlockCategory.MISC,
+            category=BlockCategory.OBJECT_STORAGE,
             input_schema=DeleteObjectFromS3.Input(),
             output_schema=DeleteObjectFromS3.Output(),
         )
@@ -349,7 +349,7 @@ class CreateBucketBlock(Block):
         super().__init__(
             name="Create Bucket",
             description="Create a bucket in an S3 compliant storage.",
-            category=BlockCategory.MISC,
+            category=BlockCategory.OBJECT_STORAGE,
             input_schema=CreateBucket.Input(),
             output_schema=CreateBucket.Output(),
         )
@@ -435,7 +435,7 @@ class DeleteBucketBlock(Block):
         super().__init__(
             name="Delete Bucket",
             description="Delete a bucket in an S3 compliant storage.",
-            category=BlockCategory.MISC,
+            category=BlockCategory.OBJECT_STORAGE,
             input_schema=DeleteBucket.Input(),
             output_schema=DeleteBucket.Output(),
         )
