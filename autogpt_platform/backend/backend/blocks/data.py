@@ -19,7 +19,7 @@ class StorageProvider(str, Enum):
 
 
 # S3 compliant storage blocks
-class StoreObjectInS3(Block):
+class StoreObjectInS3Block(Block):
     """
     This block is used to store an object in some S3 compliant storage.
     """
@@ -124,7 +124,7 @@ class StoreObjectInS3(Block):
             yield "error", "Provider not implemented yet."
 
 
-class RetrieveObjectFromS3(Block):
+class RetrieveObjectFromS3Block(Block):
     """
     This block is used to retrieve an object from some S3 compliant storage.
     """
@@ -221,7 +221,7 @@ class RetrieveObjectFromS3(Block):
             yield "error", "Provider not implemented yet."
 
 
-class DeleteObjectFromS3(Block):
+class DeleteObjectFromS3Block(Block):
     """
     This block is used to delete an object from some S3 compliant storage.
     """
@@ -307,7 +307,7 @@ class DeleteObjectFromS3(Block):
             yield "error", "Provider not implemented yet."
 
 
-class CreateBucket(Block):
+class CreateBucketBlock(Block):
     """
     This block is used to create a bucket in some S3 compliant storage.
     """
@@ -393,7 +393,7 @@ class CreateBucket(Block):
             yield "error", "Provider not implemented yet."
 
 
-class DeleteBucket(Block):
+class DeleteBucketBlock(Block):
     """
     This block is used to delete a bucket in some S3 compliant storage.
     """
