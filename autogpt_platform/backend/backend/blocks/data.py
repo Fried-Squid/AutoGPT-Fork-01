@@ -95,6 +95,8 @@ class StoreObjectInS3(Block):
         provider = input_data.provider
         if provider == StorageProvider.MINIO:
             success, error = self._store_in_s3_MINIO(input_data.key, input_data.obj, input_data.bucket, input_data.endpoint, input_data.access_key, input_data.secret_key)
-            yield "success": success, "error": error
+            yield "success", success
+            yield "error", error
         else:
-            yield "success": False, "error": "Provider not implemented yet." 
+            yield "success", False
+            yield "error", "Provider not implemented yet." 
