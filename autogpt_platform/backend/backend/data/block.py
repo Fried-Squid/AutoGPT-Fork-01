@@ -46,6 +46,7 @@ class BlockCategory(Enum):
     OUTPUT = "Block that interacts with output of the graph."
     LOGIC = "Programming logic to control the flow of your agent"
     DEVELOPER_TOOLS = "Developer tools such as GitHub blocks."
+    OBJECT_STORAGE = "Object storage blocks.s"
 
     def dict(self) -> dict[str, str]:
         return {"category": self.name, "description": self.value}
