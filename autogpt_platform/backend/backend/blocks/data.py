@@ -24,39 +24,39 @@ class StoreObjectInS3(Block):
         key: str = SchemaField(
             title="Key",
             description="The key to store the object under.",
-            required=True
+            required=True,
         )
         obj: Any = SchemaField(
             title="Object",
             description="The object to store.",
-            required=True
+            required=True,
         )
         provider: StorageProvider = SchemaField(
             title="Provider",
             description="The storage provider to use.",
-            required=True
-            default=StorageProvider.MINIO
+            required=True,
+            default=StorageProvider.MINIO,
         )
         bucket: str = SchemaField(
             title="Bucket",
             description="The bucket to store the object in.",
-            required=True
+            required=True,
         )
         endpoint: str = SchemaField(
             title="Endpoint",
             description="The endpoint of the storage provider.",
-            required=True
-            default="https://localhost:9000"
+            required=True,
+            default="https://localhost:9000",
         )
         access_key: str = SchemaField(
             title="Access Key",
             description="The access key to use.",
-            required=False
+            required=False,
         )
         secret_key: str = SchemaField(
             title="Secret Key",
             description="The secret key to use.",
-            required=False
+            required=False,
         )
     class Output(BlockSchema):
         success: bool
