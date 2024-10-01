@@ -1,12 +1,8 @@
-import re
-from typing import Any, List
+from typing import Any
 
-from jinja2 import BaseLoader, Environment
-from pydantic import Field
 
-from backend.data.block import Block, BlockCategory, BlockOutput, BlockSchema, BlockType
+from backend.data.block import Block, BlockCategory, BlockOutput, BlockSchema
 from backend.data.model import SchemaField
-from backend.util.mock import MockObject
 
 import os 
 from enum import Enum
@@ -255,7 +251,13 @@ class DeleteObjectFromS3(Block):
     def run(self, input_data: BlockInput) -> BlockOutput:
         provider = input_data.provider
         if provider == StorageProvider.MINIO:
-            success, error = self._delete_from_s3_MINIO(input_data.key, input_data
+            success, error = self._delete_from_s3_MINIO(input_data.key, input_data)
+            yield "success", success
+            yield "error", error
+        else:
+            yield "success", False
+            yield "error", "Provider not implemented yet."
+
 
 class CreateBucket(Block):
     """
