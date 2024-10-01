@@ -8,6 +8,9 @@ from backend.data.block import Block, BlockCategory, BlockOutput, BlockSchema, B
 from backend.data.model import SchemaField
 from backend.util.mock import MockObject
 
+import os 
+from enum import Enum
+
 # Helper classes
 class StorageProvider(str, Enum):
     #AWS = "aws"   -- Not implemented yet
@@ -99,4 +102,292 @@ class StoreObjectInS3(Block):
             yield "error", error
         else:
             yield "success", False
-            yield "error", "Provider not implemented yet." 
+            yield "error", "Provider not implemented yet."
+
+class RetrieveObjectFromS3(Block):
+    """
+        This block is used to retrieve an object from some S3 compliant storage.
+    """
+    class Input(BlockSchema):
+        key: str = SchemaField(
+            title="Key",
+            description="The key to retrieve the object under.",
+            required=True,
+        )
+        provider: StorageProvider = SchemaField(
+            title="Provider",
+            description="The storage provider to use.",
+            required=True,
+            default=StorageProvider.MINIO,
+        )
+        bucket: str = SchemaField(
+            title="Bucket",
+            description="The bucket to retrieve the object from.",
+            required=True,
+        )
+        endpoint: str = SchemaField(
+            title="Endpoint",
+            description="The endpoint of the storage provider.",
+            required=True,
+            default="https://localhost:9000",
+        )
+        access_key: str = SchemaField(
+            title="Access Key",
+            description="The access key to use.",
+            required=False,
+        )
+        secret_key: str = SchemaField(
+            title="Secret Key",
+            description="The secret key to use.",
+            required=False,
+        )
+    class Output(BlockSchema):
+        obj: Any
+        success: bool
+        error: str
+
+    def __init__(self):
+        super().__init__(
+            name="Retrieve Object from S3",
+            description="Retrieve an object from an S3 compliant storage.",
+            category=BlockCategory.MISC,
+            input_schema=RetrieveObjectFromS3.Input(),
+            output_schema=RetrieveObjectFromS3.Output()
+        )
+    def _retrieve_from_s3_AWS(self) -> BlockOutput:
+        # Implementation goes here
+        pass
+
+    def _retrieve_from_s3_MINIO(self, key: str, bucket: str, endpoint: str, access_key: str, secret_key: str) -> BlockOutput:
+        from Minio import Minio
+        from Minio.error import S3Error
+        client = Minio(endpoint, access_key=access_key, secret_key=secret_key)
+        try:
+            obj = client.get_object(bucket, key)
+            success = True
+            error = ""
+        except S3Error as e:
+            obj = None
+            success = False
+            error = str(e)
+        
+        return (obj, success, error)
+
+    def run(self, input_data: BlockInput) -> BlockOutput:
+        provider = input_data.provider
+        if provider == StorageProvider.MINIO:
+            obj, success, error = self._retrieve_from_s3_MINIO(input_data.key, input_data.bucket, input_data.endpoint, input_data.access_key, input_data.secret_key)
+            if obj:
+                yield "obj", obj
+            yield "success", success
+            yield "error", error
+        else:
+            yield "obj", None
+            yield "success", False
+            yield "error", "Provider not implemented yet."
+
+class DeleteObjectFromS3(Block):
+    """
+        This block is used to delete an object from some S3 compliant storage.
+    """
+    class Input(BlockSchema):
+        key: str = SchemaField(
+            title="Key",
+            description="The key to delete the object under.",
+            required=True,
+        )
+        provider: StorageProvider = SchemaField(
+            title="Provider",
+            description="The storage provider to use.",
+            required=True,
+            default=StorageProvider.MINIO,
+        )
+        bucket: str = SchemaField(
+            title="Bucket",
+            description="The bucket to delete the object from.",
+            required=True,
+        )
+        endpoint: str = SchemaField(
+            title="Endpoint",
+            description="The endpoint of the storage provider.",
+            required=True,
+            default="https://localhost:9000",
+        )
+        access_key: str = SchemaField(
+            title="Access Key",
+            description="The access key to use.",
+            required=False,
+        )
+        secret_key: str = SchemaField(
+            title="Secret Key",
+            description="The secret key to use.",
+            required=False,
+        )
+    class Output(BlockSchema):
+        success: bool
+        error: str
+
+    def __init__(self):
+        super().__init__(
+            name="Delete Object from S3",
+            description="Delete an object from an S3 compliant storage.",
+            category=BlockCategory.MISC,
+            input_schema=DeleteObjectFromS3.Input(),
+            output_schema=DeleteObjectFromS3.Output()
+        )
+    def _delete_from_s3_AWS(self) -> BlockOutput:
+        # Implementation goes here
+        pass
+    def _delete_from_s3_MINIO(self, key: str, bucket: str, endpoint: str, access_key: str, secret_key: str) -> BlockOutput:
+        from Minio import Minio
+        from Minio.error import S3Error
+        client = Minio(endpoint, access_key=access_key, secret_key=secret_key)
+        try:
+            client.remove_object(bucket, key)
+            success = True
+            error = ""
+        except S3Error as e:
+            success = False
+            error = str(e)
+        
+        return (success, error)
+
+    def run(self, input_data: BlockInput) -> BlockOutput:
+        provider = input_data.provider
+        if provider == StorageProvider.MINIO:
+            success, error = self._delete_from_s3_MINIO(input_data.key, input_data
+
+class CreateBucket(Block):
+    """
+        This block is used to create a bucket in some S3 compliant storage.
+    """
+    class Input(BlockSchema):
+        bucket: str = SchemaField(
+            title="Bucket",
+            description="The bucket to create.",
+            required=True,
+        )
+        provider: StorageProvider = SchemaField(
+            title="Provider",
+            description="The storage provider to use.",
+            required=True,
+            default=StorageProvider.MINIO,
+        )
+        endpoint: str = SchemaField(
+            title="Endpoint",
+            description="The endpoint of the storage provider.",
+            required=True,
+            default="https://localhost:9000",
+        )
+        access_key: str = SchemaField(
+            title="Access Key",
+            description="The access key to use.",
+            required=False,
+        )
+        secret_key: str = SchemaField(
+            title="Secret Key",
+            description="The secret key to use.",
+            required=False,
+        )
+    class Output(BlockSchema):
+        success: bool
+        error: str
+
+    def __init__(self):
+        super().__init__(
+            name="Create Bucket",
+            description="Create a bucket in an S3 compliant storage.",
+            category=BlockCategory.MISC,
+            input_schema=CreateBucket.Input(),
+            output_schema=CreateBucket.Output()
+        )
+    
+    def _create_bucket_AWS(self) -> BlockOutput:
+        # Implementation goes here
+        pass
+
+    def _create_bucket_MINIO(self, bucket: str, endpoint: str, access_key: str, secret_key: str) -> BlockOutput:
+        from Minio import Minio
+        from Minio.error import S3Error
+        client = Minio(endpoint, access_key=access_key, secret_key=secret_key)
+        try:
+            client.make_bucket(bucket)
+            success = True
+            error = ""
+        except S3Error as e:
+            success = False
+            error = str(e)
+        
+        return (success, error)
+
+    def run(self, input_data: BlockInput) -> BlockOutput:
+        provider = input_data.provider
+        if provider == StorageProvider.MINIO:
+            success, error = self._create_bucket_MINIO(input_data.bucket, input_data.endpoint, input_data.access_key, input_data.secret_key)
+            yield "success", success
+            yield "error", error
+        else:
+            yield "success", False
+            yield "error", "Provider not implemented yet."
+
+class DeleteBucket(Block):
+    """
+        This block is used to delete a bucket in some S3 compliant storage.
+    """
+    class Input(BlockSchema):
+        bucket: str = SchemaField(
+            title="Bucket",
+            description="The bucket to delete.",
+            required=True,
+        )
+        provider: StorageProvider = SchemaField(
+            title="Provider",
+            description="The storage provider to use.",
+            required=True,
+            default=StorageProvider.MINIO,
+        )
+        endpoint: str = SchemaField(
+            title="Endpoint",
+            description="The endpoint of the storage provider.",
+            required=True,
+            default="https://localhost:9000",
+        )
+        access_key: str = SchemaField(
+            title="Access Key",
+            description="The access key to use.",
+            required=False,
+        )
+        secret_key: str = SchemaField(
+            title="Secret Key",
+            description="The secret key to use.",
+            required=False,
+        )
+    class Output(BlockSchema):
+        success: bool
+        error: str
+    def __init__(self):
+        super().__init__(
+            name="Delete Bucket",
+            description="Delete a bucket in an S3 compliant storage.",
+            category=BlockCategory.MISC,
+            input_schema=DeleteBucket.Input(),
+            output_schema=DeleteBucket.Output()
+        )
+    def _delete_bucket_AWS(self) -> BlockOutput:
+        # Implementation goes here
+        pass
+    def _delete_bucket_MINIO(self, bucket: str, endpoint: str, access_key: str, secret_key: str) -> BlockOutput:
+        from Minio import Minio
+        from Minio.error import S3Error
+        client = Minio(endpoint, access_key=access_key, secret_key=secret_key)
+        try:
+            client.remove_bucket(bucket)
+            success = True
+            error = ""
+        except S3Error as e:
+            success = False
+            error = str(e)
+        
+        return (success, error)
+
+
